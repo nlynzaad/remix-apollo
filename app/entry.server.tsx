@@ -82,7 +82,6 @@ function handleBrowserRequest(
 			</ApolloProvider>
 		);
 		await getDataFromTree(App);
-		const initialState = client.extract();
 
 		const { pipe, abort } = renderToPipeableStream(App, {
 			onShellReady() {
