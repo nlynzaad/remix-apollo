@@ -63,7 +63,7 @@ function handleBrowserRequest(
 	responseHeaders: Headers,
 	remixContext: EntryContext
 ) {
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const client = new ApolloClient({
 			ssrMode: true,
 			cache: new InMemoryCache(),
@@ -81,8 +81,6 @@ function handleBrowserRequest(
 				<RemixServer context={remixContext} url={request.url} />
 			</ApolloProvider>
 		);
-		await getDataFromTree(App);
-		const initialState = client.extract();
 
 		const { pipe, abort } = renderToPipeableStream(App, {
 			onShellReady() {
@@ -92,7 +90,9 @@ function handleBrowserRequest(
 					transform(chunk, encoding, callback) {
 						callback(null, chunk);
 					},
-					flush(callback) {
+					async flush(callback) {
+						await getDataFromTree(App);
+
 						// Extract the entirety of the Apollo Client cache's current state
 						const initialState = client.extract();
 
